@@ -86,7 +86,7 @@ module Async_FIFO #(parameter FIFO_DEPTH = 64,
         end
       else
         begin
-          o_Full = Full;
+          o_Full <= Full;
         end
     end
     
@@ -99,7 +99,7 @@ module Async_FIFO #(parameter FIFO_DEPTH = 64,
         end
       else
         begin
-          o_Empty = Empty;
+          o_Empty <= Empty;
         end
     end
 
@@ -139,8 +139,8 @@ module Async_FIFO #(parameter FIFO_DEPTH = 64,
       else begin
         if (i_wEN && !Full)             // Check for Write Enable & Fifo Full(not full) to write pointer increment
         begin    
-           Mem[r_Wr_Ptr] = i_wData;
-           $display("%m : Data write into memory Mem[%0d] = %0h",r_Wr_Ptr, Mem[r_Wr_Ptr]);
+           Mem[r_Wr_Ptr] <= i_wData;
+           //$display("%m : Data write into memory Mem[%0d] = %0h",r_Wr_Ptr, Mem[r_Wr_Ptr]);
         end
       end
     end
@@ -151,8 +151,8 @@ module Async_FIFO #(parameter FIFO_DEPTH = 64,
         o_rData <= 8'h00;
       else begin
         if(i_rEN && !Empty) begin      // Check for Read Enable & Fifo empty(not empty) to Read pointer increment
-          o_rData = Mem[r_Rd_Ptr];
-          $display("%m : Data read from Memory r_Data = %0h",Mem[r_Rd_Ptr]);
+          o_rData <= Mem[r_Rd_Ptr];
+          //$display("%m : Data read from Memory r_Data = %0h",Mem[r_Rd_Ptr]);
         end
       end
   end
