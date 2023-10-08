@@ -1,25 +1,6 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 11.09.2023 08:28:05
-// Design Name: 
-// Module Name: dff_sync2
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
 
-
+// 2-FlipFlop Synchronizer
 module dff_Sync2#(parameter POINTER = 6)(
   
    input                clk,
@@ -30,6 +11,8 @@ module dff_Sync2#(parameter POINTER = 6)(
 
   reg [POINTER:0] r_Sync_Flop1;
   reg [POINTER:0] r_Sync_Flop2;
+  
+  assign o_Q_Synced = r_Sync_Flop2;
 
   always @(posedge clk or negedge reset_n)
     begin
@@ -39,9 +22,8 @@ module dff_Sync2#(parameter POINTER = 6)(
           r_Sync_Flop2 <= {POINTER{1'b0}};
         end
       else begin
-        r_Sync_Flop1 <= i_D;
-        r_Sync_Flop2 <= r_Sync_Flop1;
+          r_Sync_Flop1 <= i_D;
+          r_Sync_Flop2 <= r_Sync_Flop1;
       end
     end
-  assign o_Q_Synced = r_Sync_Flop2;
 endmodule

@@ -21,7 +21,7 @@
 
 
 // D flipflop with synchronous reset 
-module dff (input logic i_d,clk,i_rstn, output logic o_q);
+module dff (input logic i_d, clk, i_rstn, output logic o_q);
 
   always @(posedge clk) begin
     if(!i_rstn) begin

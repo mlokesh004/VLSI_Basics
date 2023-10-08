@@ -1,29 +1,34 @@
+`timescale 1ns / 1ps
+
 //////////////////////////////////////////////////////////////////////////////////
-// Company: Self
 // Engineer: Lokesh Methuku
+// Project Name: Asynchronous fifo Version 1.0
 // 
-// Create Date: 11.09.2023 08:23:48
-// Design Name: Asynchronous FIFO
-// Module Name: async_fifo
-// Project Name: asynchronous fifo
-// Target Devices: 
-// Tool Versions: 
 // Description: 
-// 
+// FIFOs are often used to safely pass data from one clock domain to another asynchronous clock domain. Using a
+// FIFO to pass data from one clock domain to another clock domain requires multi-asynchronous clock design
+// techniques. There are many ways to design a FIFO wrong. There are many ways to design a FIFO right but still
+// make it difficult to properly synthesize and analyze the design.
+//
+// General Spec: 
+//        Depth       = 64 
+//        Write CLOCK = 100 MHz
+//        Read CLOCK  = 50  MHz
+//
 // Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
 // Additional Comments:
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
 
+// Mandatory includes
 `include "dff_synchronizer.sv"
 `include "bin_to_gray.sv"
 `include "gray_to_bin.sv"
 `include "reset_synchronizer.sv"
 
+
+// Asynchronous FIFO Design
 module Async_FIFO #(parameter FIFO_DEPTH = 64,
                     parameter DATA_WIDTH = 8,
 		            parameter POINTER    = 6 )(
@@ -44,7 +49,6 @@ module Async_FIFO #(parameter FIFO_DEPTH = 64,
   logic [POINTER:0] r_Wr_Ptr_G, r_Rd_Ptr_G, r_Wr_Ptr_G_Synced, r_Rd_Ptr_G_Synced;      // Internal Gray pointers - Write and Read
   logic [POINTER:0] r_Wr_Ptr_B_Synced, r_Rd_Ptr_B_Synced;                              // Internal Binary pointers after 2-ff sync
   logic Empty, Full;                                                                   // Internal wires for full and empty outputs
-  logic [DATA_WIDTH-1:0] r_rData;                                                      // Internal register for Read data
   logic Rstn_Synced;
   
   //Memory or FIFO buffer
@@ -52,8 +56,7 @@ module Async_FIFO #(parameter FIFO_DEPTH = 64,
   
   
   //Reset Synchronizer
-  rst_2ff_sync fifo_rst_sync_2ff (.i_D(1), .i_clk(i_wClk), .i_Rstn(reset_n), 
-.o_Rst_Synced(Rstn_Synced));
+  rst_2ff_sync fifo_rst_sync_2ff (.ip_D(1'b1), .i_clk(i_wClk), .i_Rstn(reset_n), .o_Rst_Synced(Rstn_Synced));
   
   
   //Binary 2 Gray Converter
@@ -79,7 +82,7 @@ module Async_FIFO #(parameter FIFO_DEPTH = 64,
     begin
       if(!Rstn_Synced)
         begin
-          o_Full = 'b0;
+          o_Full <= 'b0;
         end
       else
         begin
@@ -92,7 +95,7 @@ module Async_FIFO #(parameter FIFO_DEPTH = 64,
     begin
       if(!Rstn_Synced)
         begin
-          o_Empty = 'b1;
+          o_Empty <= 'b1;
         end
       else
         begin
@@ -145,10 +148,10 @@ module Async_FIFO #(parameter FIFO_DEPTH = 64,
   // Memory Read
   always @(posedge i_rClk or negedge Rstn_Synced) begin
       if(!Rstn_Synced)
-        r_rData <= 8'h00;
+        o_rData <= 8'h00;
       else begin
         if(i_rEN && !Empty) begin      // Check for Read Enable & Fifo empty(not empty) to Read pointer increment
-          r_rData <= Mem[r_Rd_Ptr];
+          o_rData = Mem[r_Rd_Ptr];
           $display("%m : Data read from Memory r_Data = %0h",Mem[r_Rd_Ptr]);
         end
       end

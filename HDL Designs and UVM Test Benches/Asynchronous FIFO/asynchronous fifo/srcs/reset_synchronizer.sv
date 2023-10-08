@@ -1,33 +1,26 @@
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 07.10.2023 03:25:35
-// Design Name: 
-// Module Name: 
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
+`timescale 1ns / 1ps
 
-
+//2-FlipFlop Reset Synchronizer
 module rst_2ff_sync (
 
-  input logic i_D, i_clk, i_Rstn, 
+  input  logic ip_D, i_clk, i_Rstn, 
   output logic o_Rst_Synced
   );
   
-  wire d_intermediate;
-    
-  dff dff1 (.i_d(i_D), .clk(i_clk), .i_rstn(i_Rstn), .o_q(d_intermediate));
-  dff dff2 (.i_d(d_intermediate), .clk(i_clk), .i_rstn(i_Rstn), .o_q(o_Rst_Synced));
-
+  reg rst_Sync_Flop1, rst_Sync_Flop2;
+      
+  assign o_Rst_Synced = rst_Sync_Flop2;
+  
+  always @(posedge i_clk or negedge i_Rstn)
+    begin
+      if(!i_Rstn) begin
+          rst_Sync_Flop1 <= 'b0;
+          rst_Sync_Flop2 <= 'b0;
+      end
+      else begin
+          rst_Sync_Flop1 <= ip_D;
+          rst_Sync_Flop2 <= rst_Sync_Flop1;
+      end
+  end
+  
 endmodule : rst_2ff_sync
